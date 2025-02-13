@@ -3,9 +3,8 @@
 #include <HTTPClient.h>
 
 // Wi-Fi Credentials
-const char* ssid = "ISHIHARA_LABOax5";
-const char* password = "palac!kultury!901";
-const char* server_url = "http://your-server.com/state"; // Replace with your server
+// what did you think i was going to put there hehe 
+
 // Define states
 enum State { JUNBICHU, KITAKU, SAGYOCHU };
 State currentState = JUNBICHU;
