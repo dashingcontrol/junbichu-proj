@@ -24,12 +24,8 @@
     function sendState(state) {
         console.log(`Sending state: ${state}`);
 
-        // 1. THIS IS THE URL FROM YOUR .ino FILE
         const serverUrl = 'https://api.jsonbin.io/v3/b/67adbd89e41b4d34e48c1a1c';
-
-        // 2. THIS IS THE API KEY YOU NEED TO WRITE TO JSONBIN
-        // !! Replace "YOUR_API_KEY_HERE" with your actual jsonbin.io key !!
-        const apiKey = 'YOUR_API_KEY_HERE'; 
+        const apiKey = '$2a$10$M4733IloqiSyeFXoSGkwBuXXpTqynG7n5ux511MJl5SxpW3fKK7Cu'; 
 
         fetch(serverUrl, {
             method: 'PUT', // Use PUT to update the bin, just like your .ino file
