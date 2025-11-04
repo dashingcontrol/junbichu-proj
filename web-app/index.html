@@ -21,24 +21,35 @@
     </div>
 
     <script>
-        const API_URL = "https://api.jsonbin.io/v3/b/67adbd89e41b4d34e48c1a1c"; 
+    function sendState(state) {
+        console.log(`Sending state: ${state}`);
 
-        async function setState(state) {
-            await fetch(API_URL, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ state })
-            });
-            updateStatus();
-        }
+        // 1. THIS IS THE URL FROM YOUR .ino FILE
+        const serverUrl = 'https://api.jsonbin.io/v3/b/67adbd89e41b4d34e48c1a1c';
 
-        async function updateStatus() {
-            const res = await fetch(API_URL);
-            const data = await res.json();
-            document.getElementById("status").innerText = `状態: ${data.state}`;
-        }
+        // 2. THIS IS THE API KEY YOU NEED TO WRITE TO JSONBIN
+        // !! Replace "YOUR_API_KEY_HERE" with your actual jsonbin.io key !!
+        const apiKey = 'YOUR_API_KEY_HERE'; 
 
-        updateStatus(); // Fetch state on load
+        fetch(serverUrl, {
+            method: 'PUT', // Use PUT to update the bin, just like your .ino file
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Master-Key': apiKey // This header is required to write
+            },
+            body: JSON.stringify({ state: state }) // Send the same JSON structure
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Success:', data);
+            // Update the status text on the web page
+            document.getElementById('status').innerText = `Current State: ${state}`;
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            document.getElementById('status').innerText = 'Error updating state.';
+        });
+    }
     </script>
 
     <style>
