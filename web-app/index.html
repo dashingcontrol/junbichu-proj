@@ -7,47 +7,62 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-900 text-white flex flex-col items-center justify-center h-screen">
-
     <h1 class="text-3xl font-bold mb-4">状態管理 アップリ</h1>
-
-    <!-- Status Display -->
     <div id="status" class="bg-gray-800 text-xl px-6 py-3 rounded-lg shadow-md mb-6">状態: 読み込み中...</div>
-
-    <!-- Control Buttons -->
     <div class="flex gap-4">
         <button onclick="setState('junbichu')" class="btn">準備中</button>
         <button onclick="setState('kitaku')" class="btn">帰宅</button>
         <button onclick="setState('sagyochu')" class="btn">作業中</button>
     </div>
-
     <script>
-    function sendState(state) {
-        console.log(`Sending state: ${state}`);
+        const SERVER_URL = 'https://api.jsonbin.io/v3/b/67adbd89e41b4d34e48c1a1c';
+        const API_KEY = '$2a$10$M4733IloqiSyeFXoSGkwBuXXpTqynG7n5ux511MJl5SxpW3fKK7Cu';
 
-        const serverUrl = 'https://api.jsonbin.io/v3/b/67adbd89e41b4d34e48c1a1c';
-        const apiKey = '$2a$10$M4733IloqiSyeFXoSGkwBuXXpTqynG7n5ux511MJl5SxpW3fKK7Cu'; 
+        function setState(state) {
+            console.log('Sending state:', state);
+            document.getElementById('status').innerText = `状態: 送信中...`;
+            
+            fetch(SERVER_URL, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Master-Key': API_KEY
+                },
+                body: JSON.stringify({ state: state })
+            })
+            .then(response => {
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                return response.json();
+            })
+            .then(data => {
+                console.log('Response:', data);
+                document.getElementById('status').innerText = `状態: ${state}`;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('status').innerText = `エラー: ${error.message}`;
+            });
+        }
 
-        fetch(serverUrl, {
-            method: 'PUT', // Use PUT to update the bin, just like your .ino file
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Master-Key': apiKey // This header is required to write
-            },
-            body: JSON.stringify({ state: state }) // Send the same JSON structure
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Success:', data);
-            // Update the status text on the web page
-            document.getElementById('status').innerText = `Current State: ${state}`;
-        })
-        .catch((error) => {
-            console.error('Error:', error);
-            document.getElementById('status').innerText = 'Error updating state.';
-        });
-    }
+        function fetchCurrentState() {
+            fetch(SERVER_URL + '/latest', {
+                method: 'GET',
+                headers: { 'X-Master-Key': API_KEY }
+            })
+            .then(response => response.json())
+            .then(data => {
+                const currentState = data.record?.state || '不明';
+                document.getElementById('status').innerText = `状態: ${currentState}`;
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+                document.getElementById('status').innerText = '状態: 取得失敗';
+            });
+        }
+
+        // Load current state on page load
+        fetchCurrentState();
     </script>
-
     <style>
         .btn {
             padding: 10px 20px;
@@ -56,12 +71,14 @@
             border-radius: 10px;
             transition: all 0.2s;
             box-shadow: 2px 2px 10px rgba(255, 255, 255, 0.1);
+            background-color: #374151;
+            cursor: pointer;
         }
         .btn:hover {
             transform: scale(1.05);
             box-shadow: 4px 4px 15px rgba(255, 255, 255, 0.2);
+            background-color: #4b5563;
         }
     </style>
-
 </body>
 </html>
